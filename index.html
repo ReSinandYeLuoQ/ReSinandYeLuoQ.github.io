@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SupNice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: manipulation; /* 防止移动端双击缩放 */
+        }
+        
+        body {
+            width: 640px;
+            height: 1008px;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+            background-color: #f0f0f0;
+        }
+        
+        .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            background-color: #fff;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .next-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid #333;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-20px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+        
+        #game-page {
+            background-color: #e0f7fa;
+        }
+        
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.7;
+            cursor: pointer;
+        }
+        
+        .small-shape {
+            position: absolute;
+        }
+        
+        .trapezoid {
+            border-bottom: 30px solid #ff9800;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            height: 0;
+            width: 50px;
+        }
+        
+        .square {
+            width: 40px;
+            height: 40px;
+            background-color: #4caf50;
+        }
+        
+        .diamond {
+            width: 40px;
+            height: 40px;
+            background-color: #2196f3;
+            transform: rotate(45deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .red { background-color: #f44336; }
+        .blue { background-color: #2196f3; }
+        .green { background-color: #4caf50; }
+    </style>
+</head>
+<body>
+    <!-- 空白页面容器 -->
+    <div id="blank-pages">
+        <!-- 动态生成5个空白页面 -->
+    </div>
+    
+    <!-- 游戏页面 -->
+    <div id="game-page" class="page">
+        <h1 style="text-align: center; margin-top: 20px;">SupNice 小游戏</h1>
+        <div id="game-container" style="width: 100%; height: 90%; position: relative;"></div>
+        <div id="game-complete" style="display: none; text-align: center; margin-top: 40px;">
+            <h2>恭喜完成!</h2>
+            <button id="next-level" style="padding: 10px 20px; margin-top: 20px;">下一页</button>
+        </div>
+    </div>
+    
+    <!-- 结果页面 -->
+    <div id="result-page" class="page">
+        <h1 style="text-align: center; margin-top: 200px;">游戏结束!</h1>
+        <p style="text-align: center; margin-top: 50px;">感谢参与 SupNice 小游戏</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建5个空白页面
+            const blankPagesContainer = document.getElementById('blank-pages');
+            for (let i = 0; i < 5; i++) {
+                const page = document.createElement('div');
+                page.className = 'page';
+                page.id = `blank-page-${i}`;
+                
+                // 为除最后一页外的页面添加下一页按钮
+                if (i < 4) {
+                    const nextBtn = document.createElement('div');
+                    nextBtn.className = 'next-btn';
+                    nextBtn.addEventListener('click', function() {
+                        page.classList.remove('active');
+                        document.getElementById(`blank-page-${i + 1}`).classList.add('active');
+                    });
+                    page.appendChild(nextBtn);
+                } else {
+                    // 第5页的按钮跳转到游戏页面
+                    const nextBtn = document.createElement('div');
+                    nextBtn.className = 'next-btn';
+                    nextBtn.addEventListener('click', function() {
+                        page.classList.remove('active');
+                        document.getElementById('game-page').classList.add('active');
+                        initGame(); // 初始化游戏
+                    });
+                    page.appendChild(nextBtn);
+                }
+                
+                blankPagesContainer.appendChild(page);
+            }
+            
+            // 显示第一页
+            document.getElementById('blank-page-0').classList.add('active');
+            
+            // 游戏相关变量
+            let gameContainer;
+            let largeCircles = [];
+            let smallShapes = [];
+            let isDragging = false;
+            let currentCircle = null;
+            let velocity = { x: 0, y: 0 };
+            
+            // 初始化游戏
+            function initGame() {
+                gameContainer = document.getElementById('game-container');
+                gameContainer.innerHTML = ''; // 清空游戏容器
+                
+                // 创建3个大型圆形
+                createLargeCircle(100, 200, 'red');
+                createLargeCircle(250, 400, 'blue');
+                createLargeCircle(400, 600, 'green');
+                
+                // 创建随机3-5个小型形状
+                const shapeCount = Math.floor(Math.random() * 3) + 3; // 3-5个
+                for (let i = 0; i < shapeCount; i++) {
+                    const shapeType = ['trapezoid', 'square', 'diamond'][Math.floor(Math.random() * 3)];
+                    createSmallShape(shapeType);
+                }
+                
+                // 为游戏容器添加触摸事件监听
+                gameContainer.addEventListener('touchstart', handleTouchStart);
+                gameContainer.addEventListener('touchmove', handleTouchMove);
+                gameContainer.addEventListener('touchend', handleTouchEnd);
+                
+                // 隐藏游戏完成提示
+                document.getElementById('game-complete').style.display = 'none';
+                
+                // 为下一页按钮添加事件
+                document.getElementById('next-level').addEventListener('click', function() {
+                    document.getElementById('game-page').classList.remove('active');
+                    document.getElementById('result-page').classList.add('active');
+                });
+            }
+            
+            // 创建大型圆形
+            function createLargeCircle(x, y, color) {
+                const circle = document.createElement('div');
+                circle.className = `shape ${color}`;
+                circle.style.width = '80px';
+                circle.style.height = '80px';
+                circle.style.left = `${x}px`;
+                circle.style.top = `${y}px`;
+                circle.dataset.color = color;
+                circle.dataset.type = 'large';
+                
+                // 存储圆形信息
+                largeCircles.push({
+                    element: circle,
+                    x: x,
+                    y: y,
+                    radius: 40,
+                    color: color,
+                    isDragging: false
+                });
+                
+                gameContainer.appendChild(circle);
+            }
+            
+            // 创建小型形状
+            function createSmallShape(type) {
+                const shape = document.createElement('div');
+                shape.className = `small-shape ${type}`;
+                
+                // 随机位置
+                const x = Math.floor(Math.random() * (gameContainer.offsetWidth - 50));
+                const y = Math.floor(Math.random() * (gameContainer.offsetHeight - 50));
+                
+                shape.style.left = `${x}px`;
+                shape.style.top = `${y}px`;
+                shape.dataset.type = type;
+                
+                // 存储小型形状信息
+                smallShapes.push({
+                    element: shape,
+                    x: x,
+                    y: y,
+                    type: type
+                });
+                
+                gameContainer.appendChild(shape);
+            }
+            
+            // 触摸开始事件处理
+            function handleTouchStart(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const touchX = touch.clientX;
+                const touchY = touch.clientY;
+                
+                // 检查是否触摸到大型圆形
+                for (let i = 0; i < largeCircles.length; i++) {
+                    const circle = largeCircles[i];
+                    const rect = circle.element.getBoundingClientRect();
+                    
+                    // 计算触摸点与圆心的距离
+                    const dx = touchX - (rect.left + circle.radius);
+                    const dy = touchY - (rect.top + circle.radius);
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance <= circle.radius) {
+                        isDragging = true;
+                        currentCircle = circle;
+                        currentCircle.startX = touchX;
+                        currentCircle.startY = touchY;
+                        currentCircle.lastX = touchX;
+                        currentCircle.lastY = touchY;
+                        velocity = { x: 0, y: 0 };
+                        break;
+                    }
+                }
+            }
+            
+            // 触摸移动事件处理
+            function handleTouchMove(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                const touch = e.touches[0];
+                const touchX = touch.clientX;
+                const touchY = touch.clientY;
+                
+                // 计算移动距离
+                const dx = touchX - currentCircle.lastX;
+                const dy = touchY - currentCircle.lastY;
+                
+                // 更新圆形位置
+                currentCircle.x += dx;
+                currentCircle.y += dy;
+                
+                // 边界检查
+                if (currentCircle.x < 0) currentCircle.x = 0;
+                if (currentCircle.x > gameContainer.offsetWidth - currentCircle.radius * 2) {
+                    currentCircle.x = gameContainer.offsetWidth - currentCircle.radius * 2;
+                }
+                if (currentCircle.y < 0) currentCircle.y = 0;
+                if (currentCircle.y > gameContainer.offsetHeight - currentCircle.radius * 2) {
+                    currentCircle.y = gameContainer.offsetHeight - currentCircle.radius * 2;
+                }
+                
+                // 更新DOM位置
+                currentCircle.element.style.left = `${currentCircle.x}px`;
+                currentCircle.element.style.top = `${currentCircle.y}px`;
+                
+                // 计算速度 (用于滑动效果)
+                velocity.x = dx;
+                velocity.y = dy;
+                
+                // 更新上一次位置
+                currentCircle.lastX = touchX;
+                currentCircle.lastY = touchY;
+                
+                // 检测碰撞
+                checkCollisions(currentCircle);
+            }
+            
+            // 触摸结束事件处理
+            function handleTouchEnd(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                
+                isDragging = false;
+                currentCircle = null;
+                
+                // 应用滑动效果
+                applySlideEffect();
+            }
+            
+            // 应用滑动效果
+            function applySlideEffect() {
+                // 如果速度很小，直接停止
+                if (Math.abs(velocity.x) < 0.5 && Math.abs(velocity.y) < 0.5) return;
+                
+                // 衰减速度
+                velocity.x *= 0.95;
+                velocity.y *= 0.95;
+                
+                // 更新所有圆形位置
+                for (let i = 0; i < largeCircles.length; i++) {
+                    const circle = largeCircles[i];
+                    
+                    // 更新位置
+                    circle.x += velocity.x;
+                    circle.y += velocity.y;
+                    
+                    // 边界检查和反弹
+                    let hitBoundary = false;
+                    if (circle.x < 0) {
+                        circle.x = 0;
+                        velocity.x = -velocity.x * 0.7; // 反弹并减小速度
+                        hitBoundary = true;
+                    } else if (circle.x > gameContainer.offsetWidth - circle.radius * 2) {
+                        circle.x = gameContainer.offsetWidth - circle.radius * 2;
+                        velocity.x = -velocity.x * 0.7;
+                        hitBoundary = true;
+                    }
+                    
+                    if (circle.y < 0) {
+                        circle.y = 0;
+                        velocity.y = -velocity.y * 0.7;
+                        hitBoundary = true;
+                    } else if (circle.y > gameContainer.offsetHeight - circle.radius * 2) {
+                        circle.y = gameContainer.offsetHeight - circle.radius * 2;
+                        velocity.y = -velocity.y * 0.7;
+                        hitBoundary = true;
+                    }
+                    
+                    // 更新DOM位置
+                    circle.element.style.left = `${circle.x}px`;
+                    circle.element.style.top = `${circle.y}px`;
+                    
+                    // 如果碰到边界，检测碰撞
+                    if (hitBoundary) {
+                        checkCollisions(circle);
+                    }
+                }
+                
+                // 继续滑动效果，直到速度足够小
+                if (Math.abs(velocity.x) > 0.5 || Math.abs(velocity.y) > 0.5) {
+                    requestAnimationFrame(applySlideEffect);
+                }
+            }
+            
+            // 检测碰撞
+            function checkCollisions(circle) {
+                // 遍历所有小型形状
+                for (let i = smallShapes.length - 1; i >= 0; i--) {
+                    const shape = smallShapes[i];
+                    
+                    // 检查颜色和形状匹配
+                    let shouldRemove = false;
+                    if (circle.color === 'red' && shape.type === 'trapezoid') {
+                        shouldRemove = isColliding(circle, shape);
+                    } else if (circle.color === 'blue' && shape.type === 'diamond') {
+                        shouldRemove = isColliding(circle, shape);
+                    } else if (circle.color === 'green' && shape.type === 'square') {
+                        shouldRemove = isColliding(circle, shape);
+                    }
+                    
+                    // 如果发生碰撞，移除小型形状
+                    if (shouldRemove) {
+                        gameContainer.removeChild(shape.element);
+                        smallShapes.splice(i, 1);
+                        
+                        // 检查游戏是否完成
+                        checkGameComplete();
+                    }
+                }
+            }
+            
+            // 碰撞检测算法
+            function isColliding(circle, shape) {
+                // 获取圆形的中心点和半径
+                const circleCenterX = circle.x + circle.radius;
+                const circleCenterY = circle.y + circle.radius;
+                const circleRadius = circle.radius;
+                
+                // 获取形状的边界框
+                let shapeMinX, shapeMinY, shapeMaxX, shapeMaxY;
+                
+                if (shape.type === 'square' || shape.type === 'diamond') {
+                    shapeMinX = shape.x;
+                    shapeMinY = shape.y;
+                    shapeMaxX = shape.x + 40;
+                    shapeMaxY = shape.y + 40;
+                } else if (shape.type === 'trapezoid') {
+                    shapeMinX = shape.x;
+                    shapeMinY = shape.y;
+                    shapeMaxX = shape.x + 50;
+                    shapeMaxY = shape.y + 30;
+                }
+                
+                // 计算形状的中心点
+                const shapeCenterX = (shapeMinX + shapeMaxX) / 2;
+                const shapeCenterY = (shapeMinY + shapeMaxY) / 2;
+                
+                // 计算圆形和形状中心的距离
+                const dx = Math.abs(circleCenterX - shapeCenterX);
+                const dy = Math.abs(circleCenterY - shapeCenterY);
+                
+                // 如果距离大于两者的最大可能距离，不可能碰撞
+                if (dx > (circleRadius + (shapeMaxX - shapeMinX) / 2) || 
+                    dy > (circleRadius + (shapeMaxY - shapeMinY) / 2)) {
+                    return false;
+                }
+                
+                // 如果圆形中心在形状的边界框内，发生碰撞
+                if (circleCenterX >= shapeMinX && circleCenterX <= shapeMaxX &&
+                    circleCenterY >= shapeMinY && circleCenterY <= shapeMaxY) {
+                    return true;
+                }
+                
+                // 检查四个角的碰撞
+                const corners = [
+                    { x: shapeMinX, y: shapeMinY },
+                    { x: shapeMaxX, y: shapeMinY },
+                    { x: shapeMinX, y: shapeMaxY },
+                    { x: shapeMaxX, y: shapeMaxY }
+                ];
+                
+                for (let i = 0; i < corners.length; i++) {
+                    const corner = corners[i];
+                    const cornerDx = Math.abs(corner.x - circleCenterX);
+                    const cornerDy = Math.abs(corner.y - circleCenterY);
+                    
+                    if (Math.sqrt(cornerDx * cornerDx + cornerDy * cornerDy) <= circleRadius) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+            
+            // 检查游戏是否完成
+            function checkGameComplete() {
+                if (smallShapes.length === 0) {
+                    // 显示游戏完成提示
+                    document.getElementById('game-complete').style.display = 'block';
+                }
+            }
+        });
+    </script>
+</body>
+</html>    
