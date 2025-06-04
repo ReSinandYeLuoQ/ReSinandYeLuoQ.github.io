@@ -27,7 +27,6 @@ html, body {
   position: relative;   /* 以便后续子元素绝对定位 */
   /* 为了使手机端等比缩放，我们在 meta viewport 中已经指定 width=640 */
   /* 只要不在这里写 max-width:100%，移动端就会把它当“设计稿宽度”来等比缩放 */
-max-width:50%
   overflow: hidden;     /* 隐藏溢出内容 */
   background-color: #ffffff;
 }
