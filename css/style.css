@@ -1,0 +1,117 @@
+/* ====================== 全局重置与基础样式 ====================== */
+
+/* 1. 让所有元素的 margin 和 padding 为 0，去除浏览器默认间距 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 2. body 设为 flex 布局，水平居中对齐 */
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff; /* 背景纯白 */
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: flex-start; /* 顶部对齐 */
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  overflow-x: hidden; /* 禁止横向滚动 */
+}
+
+/* ====================== #app-container ====================== */
+/* 整个项目最外层容器：宽度固定 640px，高度随内容撑开，并根据屏幕等比缩放 */
+#app-container {
+  width: 640px;         /* 设计稿宽度 */
+  /* 高度暂时不写死，实际页面长度可能是多页之和 */
+  position: relative;   /* 以便后续子元素绝对定位 */
+  /* 为了使手机端等比缩放，我们在 meta viewport 中已经指定 width=640 */
+  /* 只要不在这里写 max-width:100%，移动端就会把它当“设计稿宽度”来等比缩放 */
+  overflow: hidden;     /* 隐藏溢出内容 */
+  background-color: #ffffff;
+}
+
+/* ====================== 公共漫画页面 .comic-page 样式 ====================== */
+/* .comic-page 代表一个漫画“页”，其高固定 1008px */
+.comic-page {
+  width: 100%;
+  height: 1008px;     /* 设计稿高度 */
+  position: relative; /* 里面的 comic-part 用绝对定位方便层叠 */
+  overflow: hidden;
+}
+
+/* ====================== 漫画切片 .comic-part ====================== */
+/* 默认不显示，每个 .comic-part 内包含一张 <img>，我们让 img 宽度 100% 适应容器 */
+.comic-part {
+  display: none;      /* JS 触发时再改为 block 或者 fade-in */
+  position: absolute; /* 绝对定位，全部贴满父容器 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.comic-part img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 保证图片铺满 */
+}
+
+/* ====================== 底部箭头 .nav-arrow ====================== */
+/* 将箭头固定在每页最底部中央，宽度自适应，点击区域稍大一些 */
+.nav-arrow {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;  /* 箭头图标宽度 */
+  height: 300px; /* 箭头图标高度 */
+  cursor: pointer;
+  z-index: 100; /* 保证在漫画切片上方 */
+}
+
+.nav-arrow img {
+  width: 100%;
+  height: 100%;
+}
+
+/* ====================== 结束页超链接 .end-link ====================== */
+.end-link {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+}
+
+.end-link a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+/* ====================== 游戏页面 #game-page & canvas ====================== */
+/* #game-page 本身也是宽 100%、高 1008px（与漫画页面一致） */
+#game-page {
+  width: 100%;
+  height: 1008px;
+  background-color: #000; /* 临时背景色，实际用 JS 画背景图 */
+  position: relative;
+  overflow: hidden;
+}
+
+/* #game-canvas 放置在 #app-container 内，宽度 100% (640px)，高度自动等比 */
+#game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #000; /* 默认黑底，后面 JS 会 drawImage */
+}
+
+/* ====================== 响应式适配（可选） ====================== */
+/* 
+  由于我们在 <meta viewport> 已经指定 width=640，移动端浏览器会把
+  页面当作宽度 640px 来“缩放”显示。因此，只要不手动写 max-width:100%，
+  移动端会自动把 640px 缩小到屏幕宽度，不需要额外写 CSS。  
+*/
+
