@@ -245,7 +245,7 @@ async function preloadGameAssets() {
   await loadImage("images/game/bg-final.png");
 
   // player1 所有帧
-  const player1FrameCount = 10; // 假设有 10 帧，实际根据你的资源自行修改
+  const player1FrameCount = 9; // 假设有 9 帧，实际根据你的资源自行修改
   for (let i = 1; i <= player1FrameCount; i++) {
     await loadImage(`images/game/player1-frame${i}.png`);
   }
@@ -259,8 +259,8 @@ async function preloadGameAssets() {
   await loadImage("images/game/enemy2.png");
   await loadImage("images/game/enemy3.png");
 
-  // 特殊动画帧（假设 M = 8 帧），实际根据你素材命名来改
-  const specialFrameCount = 8;
+  // 特殊动画帧（假设 M = 1 帧），实际根据你素材命名来改
+  const specialFrameCount = 1;
   for (let i = 1; i <= specialFrameCount; i++) {
     await loadImage(`images/game/special-frame${i}.png`);
   }
