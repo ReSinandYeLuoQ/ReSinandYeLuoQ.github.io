@@ -89,11 +89,82 @@
   <div class="page" id="page6" style="background:white; text-align:center;">
     <img class="link-img" id="final-image" src="assets/images/final.png" style="display:block;">
     <a href="https://example.com" target="_blank">
-      <img class="link-button" src="assets/images/button.png" style="margin-top:200px;margin-left:300px;width:40px;display:block;">
+      <img class="link-button" src="assets/images/button.png" style="margin-top:20px;width:200px;">
     </a>
   </div>
 
+  <script>
+    const pages = ["page1", "page2", "page3", "page4", "page5", "page6"];
 
- <script src="main.js"></script>
+    function showPage(index) {
+      pages.forEach(id => document.getElementById(id).classList.remove("active"));
+      document.getElementById(pages[index]).classList.add("active");
+    }
+
+    // Page 1 logic
+    setTimeout(() => document.getElementById("line1").style.opacity = 1, 1000);
+    setTimeout(() => document.getElementById("line2").style.opacity = 1, 2000);
+    setTimeout(() => {
+      showPage(1);
+      startComicSequence("comic2", 5, () => {
+        document.getElementById("arrow2").style.display = "block";
+      });
+    }, 5000);
+
+    // Page 2 arrow
+    document.getElementById("arrow2").onclick = () => {
+      showPage(2);
+      startComicSequence("comic3", 5, () => {
+        document.getElementById("arrow3").style.display = "block";
+      });
+    };
+
+    // Page 3 arrow
+    document.getElementById("arrow3").onclick = () => {
+      showPage(3);
+      initGame();
+    };
+
+    // Page 5 arrow
+    document.getElementById("arrow5").onclick = () => {
+      showPage(5);
+      setTimeout(() => {
+        document.getElementById("final-image").style.display = "block";
+        document.querySelector(".link-button").style.display = "block";
+      }, 3000);
+    };
+
+    function startComicSequence(baseId, count, onDone) {
+      let i = 1;
+      function showNext() {
+        const el = document.getElementById(`${baseId}-${i}`);
+        if (el) el.style.display = "block";
+        if (i < count) {
+          i++;
+          setTimeout(showNext, 1000);
+        } else if (onDone) {
+          onDone();
+        }
+      }
+      showNext();
+    }
+
+    // Game placeholder
+    function initGame() {
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = "#333";
+      ctx.fillRect(0, 0, 640, 1008);
+      setTimeout(() => {
+        showPage(4);
+        setTimeout(() => {
+          showPage(5);
+          startComicSequence("comic5", 4, () => {
+            document.getElementById("arrow5").style.display = "block";
+          });
+        }, 3000);
+      }, 3000); // 模拟游戏完成
+    }
+  </script>
 </body>
 </html>
