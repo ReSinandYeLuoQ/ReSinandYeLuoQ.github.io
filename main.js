@@ -1,4 +1,5 @@
 window.addEventListener('DOMContentLoaded', () => {
+
   console.log("✅ main.js 已加载");
 
   const pages = ["page1", "page2", "page3", "page4", "page5", "page6"];
@@ -14,23 +15,27 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function startComicSequence(baseId, count, onDone) {
-    let i = 1;
-    function showNext() {
-      const el = document.getElementById(`${baseId}-${i}`);
-      if (el) {
-        el.style.display = "block";
-        console.log(`[漫画] 显示图像 ${baseId}-${i}`);
-      }
-      if (i < count) {
-        i++;
-        setTimeout(showNext, 1000);
-      } else if (onDone) {
-        console.log(`[漫画] ${baseId} 播放完成`);
-        onDone();
-      }
+  let i = 1;
+  function showNext() {
+    const el = document.getElementById(`${baseId}-${i}`);
+    if (el) {
+el.classList.add("show");      
+      el.style.display = "block";           // 👈 显示元素
+             // 👈 启动渐显动画
+      console.log(`[漫画] 显示图像 ${baseId}-${i}`);
+    
     }
-    showNext();
+    if (i < count) {
+      i++;
+      setTimeout(showNext, 1000);
+    } else if (onDone) {
+      console.log(`[漫画] ${baseId} 播放完成`);
+      onDone();
+    }
   }
+  showNext();
+}
+
 
   // 页面1自动播放到页面2
   setTimeout(() => document.getElementById("line1").style.opacity = 1, 1000);
@@ -55,12 +60,21 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   document.getElementById("arrow5").onclick = () => {
-    showPage(5);
+  showPage(5);
+  setTimeout(() => {
+    document.getElementById("final-image").style.display = "block";
+
+    // ✅ 这里开始控制按钮的动画
     setTimeout(() => {
-      document.getElementById("final-image").style.display = "block";
-      document.querySelector(".link-button").style.display = "block";
-    }, 3000);
-  };
+      const btn = document.getElementById("final-button");
+      if (btn) {
+        btn.classList.add("show");
+      }
+    }, 5000);  // 等待5秒后触发动画
+
+  }, 3000);  // 图片延迟3秒显示
+};
+
 function initGame() {
   console.log("[小游戏] 初始化开始");
 
@@ -72,7 +86,7 @@ function initGame() {
   let hero = {
     x: 300,
     y: 900,
-    r: 40,
+    r: 70, // ⬆️ 放大 100%
     dragging: false,
     locked: false,
     visible: true
@@ -84,7 +98,7 @@ function initGame() {
     enemies.push({
       x: Math.random() * 540 + 50,
       y: Math.random() * 500 + 50,
-      r: 25,
+      r: 100, // ⬆️ 放大 800%
       alive: true
     });
   }
@@ -261,7 +275,7 @@ function initGame() {
       ctx.clearRect(0, 0, 640, 1008);
       ctx.drawImage(bgImage, 0, 0, 640, 1008);
       ctx.drawImage(sprite1, x, y, 200, 200);
-      x += 1;
+      x += 2; // ⬆️ 加速一倍
       y = 500 - Math.sin(x / 80) * 100;
       if (x < 700) {
         requestAnimationFrame(loop);
@@ -278,9 +292,14 @@ function initGame() {
     const loop = () => {
       ctx.clearRect(0, 0, 640, 1008);
       ctx.drawImage(bgImage, 0, 0, 640, 1008);
-      x += 0.5;
-      const y = 400 + Math.sin(angle) * 150;
-      angle += 0.03;
+      x += 2; // ⬆️ 加速一倍
+      const r = 280;
+      const centerX = 320;
+      const centerY = 504;
+      let y = centerY + Math.sin(angle) * r;
+      if (x > 0 && x < 640) {
+        angle += 0.2;
+      }
       ctx.drawImage(sprite2, x, y, 200, 200);
       if (x < 700) {
         requestAnimationFrame(loop);
@@ -291,6 +310,5 @@ function initGame() {
     loop();
   }
 }
-
 
 });

@@ -3,9 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=640, initial-scale=0.5, maximum-scale=1.0, user-scalable=no">
-  <title>我是网页名字，需要编辑</title>
+  <title>超能SupNice 运动洗护黑科技  运动最佳搭档  时尚青春  专业运动洗护</title>
+<link rel="stylesheet" href="style.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+#final-button {
+  width: 640px;
+
+  /* ✅ 位置：改这两个控制按钮出现在屏幕上的位置 */
+  bottom: 100px;     /* 距离页面底部多少像素 */      /* 按钮水平居中（与 translateX 搭配使用） */
+
+  display: none;          /* 初始完全隐藏 */
+  opacity: 0;             /* 不透明度为0 */
+  transform: translateY(500px);  /* 往下偏移50px，隐藏在视野下方 */
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  position: absolute;
+  bottom: 1px;          /* 你想要按钮显示的位置 */
+}
+
+#final-button.show {
+  display: block;         /* 显示按钮 */
+  opacity: 1;             /* 不透明 */
+  transform: translateY(0); /* 回到正常位置，做“上升”动画 */
+}    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: black;
       font-family: sans-serif;
@@ -28,7 +47,7 @@
       opacity: 0;
       transition: opacity 1s;
     }
-    .comic-img, .game-img, .enemy, .hero, .effect, .link-img, .link-button {
+    .comic-img, .game-img, .enemy, .hero, .effect, .link-img {
       position: absolute;
       width: 100%;
       display: none;
@@ -47,8 +66,8 @@
 <body>
   <!-- Page 1: 黑屏+渐显文字 -->
   <div class="page active" id="page1">
-    <div class="text-line" id="line1">这是第一行文字</div>
-    <div class="text-line" id="line2">这是第二行文字</div>
+    <div class="text-line" id="line1">今天，我要出门去见我的女神啦！</div>
+    <div class="text-line" id="line2">我好不容易才把她约出来，一定要好好表现！</div>
   </div>
 
   <!-- Page 2: 五张漫画依次显示 -->
@@ -87,13 +106,24 @@
 
   <!-- Page 6: 单格+链接 -->
   <div class="page" id="page6" style="background:white; text-align:center;">
-    <img class="link-img" id="final-image" src="assets/images/final.png" style="display:block;">
-    <a href="https://example.com" target="_blank">
-      <img class="link-button" src="assets/images/button.png" style="margin-top:200px;margin-left:300px;width:40px;display:block;">
-    </a>
-  </div>
+  <img class="link-img" id="final-image" src="assets/images/final.png" style="display:block;">
+  <a href="https://example.com" target="_blank">
+    <img class="final-button" id="final-button" src="assets/images/button.png">
+  </a>
+</div>
 
 
  <script src="main.js"></script>
+<script>
+    // 按钮延迟进入动画效果
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("final-button");
+      if (btn) {
+        setTimeout(() => {
+          btn.classList.add("show");
+        }, 5000);
+      }
+    });
+  </script>
 </body>
 </html>

@@ -57,6 +57,18 @@ body, html {
   color: black;
 }
 
+.comic-img {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  position: absolute;
+  width: 100%;
+}
+
+.comic-img.show {
+  opacity: 1;
+}
+
+
 #final-link {
   position: absolute;
   top: 40%;
@@ -64,3 +76,5 @@ body, html {
   transform: translateX(-50%);
   text-align: center;
 }
+
+
