@@ -68,28 +68,29 @@ height: 100vh;
 <body>
   <!-- Page 1: 黑屏+渐显文字 -->
   <div class="page active" id="page1">
-    <div class="text-line" id="line1">今天，我要出门去见我的女神啦！</div>
-    <div class="text-line" id="line2">我好不容易才把她约出来，一定要好好表现！</div>
+    <div class="text-line" id="line1">喂，你在哪呢？出来吃个饭吧，还是老地方。</div>
+    <div class="text-line" id="line2">哦，好，我刚刚在踢球呢，马上到 ...
+</div>
   </div>
 
   <!-- Page 2: 五张漫画依次显示 -->
   <div class="page" id="page2" style="background:white;">
-    <img class="comic-img" id="comic2-1" src="assets/images/page2-1.png">
-    <img class="comic-img" id="comic2-2" src="assets/images/page2-2.png">
-    <img class="comic-img" id="comic2-3" src="assets/images/page2-3.png">
-    <img class="comic-img" id="comic2-4" src="assets/images/page2-4.png">
-    <img class="comic-img" id="comic2-5" src="assets/images/page2-5.png">
-    <img class="arrow" id="arrow2" src="assets/images/arrow-down.png">
+    <img loading="lazy" class="comic-img" id="comic2-1" src="assets/images/page2-1.png">
+    <img loading="lazy" class="comic-img" id="comic2-2" src="assets/images/page2-2.png">
+    <img loading="lazy" class="comic-img" id="comic2-3" src="assets/images/page2-3.png">
+    <img loading="lazy" class="comic-img" id="comic2-4" src="assets/images/page2-4.png">
+    <img loading="lazy" class="comic-img" id="comic2-5" src="assets/images/page2-5.png">
+    <img loading="lazy" class="arrow" id="arrow2" src="assets/images/arrow-down.png">
   </div>
 
   <!-- Page 3: 五张漫画 -->
   <div class="page" id="page3" style="background:white;">
-    <img class="comic-img" id="comic3-1" src="assets/images/page3-1.png">
-    <img class="comic-img" id="comic3-2" src="assets/images/page3-2.png">
-    <img class="comic-img" id="comic3-3" src="assets/images/page3-3.png">
-    <img class="comic-img" id="comic3-4" src="assets/images/page3-4.png">
-    <img class="comic-img" id="comic3-5" src="assets/images/page3-5.png">
-    <img class="arrow" id="arrow3" src="assets/images/arrow-down.png">
+    <img loading="lazy" class="comic-img" id="comic3-1" src="assets/images/page3-1.png">
+    <img loading="lazy" class="comic-img" id="comic3-2" src="assets/images/page3-2.png">
+    <img loading="lazy" class="comic-img" id="comic3-3" src="assets/images/page3-3.png">
+    <img loading="lazy" class="comic-img" id="comic3-4" src="assets/images/page3-4.png">
+    <img loading="lazy" class="comic-img" id="comic3-5" src="assets/images/page3-5.png">
+    <img loading="lazy" class="arrow" id="arrow3" src="assets/images/arrow-down.png">
   </div>
 
   <!-- Page 4: 小游戏 -->
@@ -99,33 +100,55 @@ height: 100vh;
 
   <!-- Page 5: 四格漫画 -->
   <div class="page" id="page5" style="background:white;">
-    <img class="comic-img" id="comic5-1" src="assets/images/page5-1.png">
-    <img class="comic-img" id="comic5-2" src="assets/images/page5-2.png">
-    <img class="comic-img" id="comic5-3" src="assets/images/page5-3.png">
-    <img class="comic-img" id="comic5-4" src="assets/images/page5-4.png">
-    <img class="arrow" id="arrow5" src="assets/images/arrow-down.png">
+    <img loading="lazy" class="comic-img" id="comic5-1" src="assets/images/page5-1.png">
+    <img loading="lazy" class="comic-img" id="comic5-2" src="assets/images/page5-2.png">
+    <img loading="lazy" class="comic-img" id="comic5-3" src="assets/images/page5-3.png">
+    <img loading="lazy" class="comic-img" id="comic5-4" src="assets/images/page5-4.png">
+    <img loading="lazy" class="arrow" id="arrow5" src="assets/images/arrow-down.png">
   </div>
 
   <!-- Page 6: 单格+链接 -->
   <div class="page" id="page6" style="background:white; text-align:center;">
-  <img class="link-img" id="final-image" src="assets/images/final.png" style="display:block;">
-  <a href="https://example.com" target="_blank">
-    <img class="final-button" id="final-button" src="assets/images/button.png">
+  <img loading="lazy" class="link-img" id="final-image" src="assets/images/final.png" style="display:block;">
+  <a href="https://chaoneng.tmall.com/shop/view_shop.htm?spm=pc_detail.27183998/evo365560b447259.202202.1.63f27dd6NN97Q3" target="_blank">
+    <img loading="lazy" id="final-button" src="assets/images/button.png">
   </a>
 </div>
 
 
  <script src="main.js"></script>
 <script>
-    // 按钮延迟进入动画效果
-    document.addEventListener("DOMContentLoaded", () => {
-      const btn = document.getElementById("final-button");
-      if (btn) {
-        setTimeout(() => {
-          btn.classList.add("show");
-        }, 5000);
-      }
+  function showPage(index) {
+    console.log(`[showPage] 切换到页面 ${index + 1}`);
+    const pages = ["page1", "page2", "page3", "page4", "page5", "page6"];
+    pages.forEach(id => {
+      document.getElementById(id)?.classList.remove("active");
     });
-  </script>
+    const target = document.getElementById(pages[index]);
+    if (target) {
+      target.classList.add("active");
+
+      // 🔍 如果切到 page6，执行延迟动画
+      if (pages[index] === "page6") {
+        console.log("[page6] 开始延迟加载 final-button");
+
+        const img = document.getElementById("final-image");
+        const btn = document.getElementById("final-button");
+
+        // 先显示图片
+        setTimeout(() => {
+          console.log("[page6] 显示 final-image");
+          img.style.display = "block";
+
+          // 再显示按钮
+          setTimeout(() => {
+            console.log("[page6] 播放按钮动画");
+            btn.classList.add("show");
+          }, 5000);
+        }, 3000);
+      }
+    }
+  }
+</script>
 </body>
 </html>

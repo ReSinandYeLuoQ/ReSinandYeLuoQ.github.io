@@ -179,11 +179,6 @@ function initGame() {
           frame = 0;
           animPlaying = false;
           hero.locked = false;
-          if (animEnemyIndex !== null && enemies[animEnemyIndex]) {
-            enemies[animEnemyIndex].alive = false;
-          } else {
-            console.warn("⚠️ animEnemyIndex 无效或敌人不存在");
-          }
           animEnemyIndex = null;
           lastAnimTime = 0;
         }
@@ -205,6 +200,7 @@ function initGame() {
         if (!e.alive) return;
         if (Math.hypot(hero.x - e.x, hero.y - e.y) < hero.r + e.r) {
           console.log(`[碰撞检测] 击中敌人 ${index}`);
+            e.alive = false;
           animPlaying = true;
           hero.locked = true;
           animEnemyIndex = index;
