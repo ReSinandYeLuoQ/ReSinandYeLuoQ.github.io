@@ -120,6 +120,8 @@ function initGame() {
   sprite1.src = "assets/images/sprite1.png";
   const sprite2 = new Image();
   sprite2.src = "assets/images/sprite2.png";
+  const final2 = new Image();
+ final2.src = "assets/images/final2.png";
 
   const animFrames = [];
   for (let i = 1; i <= 9; i++) {
@@ -314,10 +316,10 @@ function initGame() {
       ctx.clearRect(0, 0, 640, 1008);
       ctx.drawImage(bgImage, 0, 0, 640, 1008);
       x += 2; // ⬆️ 加速一倍
-      const r = 280;
+      const r = 10;
       const centerX = 320;
       const centerY = 504;
-      let y = centerY + Math.sin(angle) * r;
+      let y = centerY - ((x/10-32)/10)*((x/10-32)/10) * r;
       if (x > 0 && x < 640) {
         angle += 0.2;
       }
