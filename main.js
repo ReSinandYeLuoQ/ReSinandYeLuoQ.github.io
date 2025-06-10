@@ -70,9 +70,9 @@ el.classList.add("show");
       if (btn) {
         btn.classList.add("show");
       }
-    }, 5000);  // 等待5秒后触发动画
+    }, 2000);  // 等待5秒后触发动画
 
-  }, 3000);  // 图片延迟3秒显示
+  }, 2000);  // 图片延迟3秒显示
 };
 
 function initGame() {
@@ -128,6 +128,31 @@ function initGame() {
     animFrames.push(img);
   }
 
+  // 添加触摸事件监听器
+  canvas.addEventListener("touchstart", e => {
+    if (hero.locked || !hero.visible) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    const mx = touch.clientX - rect.left;
+    const my = touch.clientY - rect.top;
+    if (Math.hypot(mx - hero.x, my - hero.y) < hero.r) {
+      hero.dragging = true;
+    }
+  });
+
+  canvas.addEventListener("touchmove", e => {
+    if (!hero.dragging || hero.locked || !hero.visible) return;
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    hero.x = Math.max(hero.r, Math.min(640 - hero.r, touch.clientX - rect.left));
+    hero.y = Math.max(hero.r, Math.min(1008 - hero.r, touch.clientY - rect.top));
+  });
+
+  canvas.addEventListener("touchend", () => {
+    hero.dragging = false;
+  });
+
+  // 鼠标事件监听器保持不变
   canvas.addEventListener("mousedown", e => {
     if (hero.locked || !hero.visible) return;
     const rect = canvas.getBoundingClientRect();
@@ -200,7 +225,7 @@ function initGame() {
         if (!e.alive) return;
         if (Math.hypot(hero.x - e.x, hero.y - e.y) < hero.r + e.r) {
           console.log(`[碰撞检测] 击中敌人 ${index}`);
-            e.alive = false;
+          e.alive = false;
           animPlaying = true;
           hero.locked = true;
           animEnemyIndex = index;
@@ -306,5 +331,4 @@ function initGame() {
     loop();
   }
 }
-
 });

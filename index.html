@@ -12,8 +12,8 @@
   /* ✅ 位置：改这两个控制按钮出现在屏幕上的位置 */
   bottom: 100px;     /* 距离页面底部多少像素 */      /* 按钮水平居中（与 translateX 搭配使用） */
 
-  display: none;          /* 初始完全隐藏 */
-  opacity: 0;             /* 不透明度为0 */
+  display: block;          /* 初始完全隐藏 */
+  opacity: 1;             /* 不透明度为0 */
   transform: translateY(500px);  /* 往下偏移50px，隐藏在视野下方 */
   transition: opacity 0.8s ease, transform 0.8s ease;
   position: absolute;
@@ -85,11 +85,11 @@ height: 100vh;
 
   <!-- Page 3: 五张漫画 -->
   <div class="page" id="page3" style="background:white;">
-    <img loading="lazy" class="comic-img" id="comic3-1" src="assets/images/page3-1.png">
-    <img loading="lazy" class="comic-img" id="comic3-2" src="assets/images/page3-2.png">
-    <img loading="lazy" class="comic-img" id="comic3-3" src="assets/images/page3-3.png">
-    <img loading="lazy" class="comic-img" id="comic3-4" src="assets/images/page3-4.png">
-    <img loading="lazy" class="comic-img" id="comic3-5" src="assets/images/page3-5.png">
+    <img loading="lazy" class="comic-img" id="comic3-1" src="assets/images/page3-1.webp">
+    <img loading="lazy" class="comic-img" id="comic3-2" src="assets/images/page3-2.webp">
+    <img loading="lazy" class="comic-img" id="comic3-3" src="assets/images/page3-3.webp">
+    <img loading="lazy" class="comic-img" id="comic3-4" src="assets/images/page3-4.webp">
+    <img loading="lazy" class="comic-img" id="comic3-5" src="assets/images/page3-5.webp">
     <img loading="lazy" class="arrow" id="arrow3" src="assets/images/arrow-down.png">
   </div>
 
@@ -100,10 +100,10 @@ height: 100vh;
 
   <!-- Page 5: 四格漫画 -->
   <div class="page" id="page5" style="background:white;">
-    <img loading="lazy" class="comic-img" id="comic5-1" src="assets/images/page5-1.png">
-    <img loading="lazy" class="comic-img" id="comic5-2" src="assets/images/page5-2.png">
-    <img loading="lazy" class="comic-img" id="comic5-3" src="assets/images/page5-3.png">
-    <img loading="lazy" class="comic-img" id="comic5-4" src="assets/images/page5-4.png">
+    <img loading="lazy" class="comic-img" id="comic5-1" src="assets/images/page5-1.webp">
+    <img loading="lazy" class="comic-img" id="comic5-2" src="assets/images/page5-2.webp">
+    <img loading="lazy" class="comic-img" id="comic5-3" src="assets/images/page5-3.webp">
+    <img loading="lazy" class="comic-img" id="comic5-4" src="assets/images/page5-4.webp">
     <img loading="lazy" class="arrow" id="arrow5" src="assets/images/arrow-down.png">
   </div>
 
@@ -144,8 +144,8 @@ height: 100vh;
           setTimeout(() => {
             console.log("[page6] 播放按钮动画");
             btn.classList.add("show");
-          }, 5000);
-        }, 3000);
+          }, 3000);
+        }, 1000);
       }
     }
   }
